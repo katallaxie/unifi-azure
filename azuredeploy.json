@@ -22,8 +22,9 @@
       }
   },
   "variables": {
-      "storageName": "[toLower( concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ) )]",
-      "location": "[resourceGroup().location]"
+      "location": "[resourceGroup().location]",
+      "resourceId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
+      "storageName": "[toLower( concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ) )]"
   },
   "resources": [
       {
@@ -113,7 +114,7 @@
                       "azureFile": {
                           "shareName": "unifi",
                           "storageAccountName": "[variables('storageName')]",
-                          "storageAccountKey": "[listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value]"
+                          "storageAccountKey": "[listKeys(variables('resourceId'), '2019-04-01').keys[0].value]"
                       }
                   }
               ]
