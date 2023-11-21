@@ -1,23 +1,23 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-      "ContainerName": {
-          "type": "String",
+      "ContainerGroupsName": {
+          "type": "string",
           "metadata": {
-              "description": "Name for the container."
+          "description": "Name for the container instance and group."
+          }
+      },
+      "dnsNameLabel": {
+          "type": "string",
+          "metadata": {
+          "description": "DNS name for your container instance eg heyazureguy - will result in dnsnamelabel.location.azurecontainer.io"
           }
       },
       "StorageAccountName": {
-          "type": "String",
+          "type": "string",
           "metadata": {
-              "description": "Storage Account Name will be auto generated."
-          }
-      },
-      "location": {
-          "type": "String",
-          "metadata": {
-              "description": "Location for all resources."
+          "description": "Storage Account Name will be auto generated."
           }
       }
   },
@@ -27,9 +27,9 @@
   "resources": [
       {
           "type": "Microsoft.ContainerInstance/containerGroups",
-          "apiVersion": "2021-10-01",
-          "name": "[parameters('ContainerName')]",
-          "location": "[parameters('location')]",
+          "apiVersion": "2019-12-01",
+          "name": "[parameters('ContainerGroupsName')]",
+          "location": "[resourceGroup().location]",
           "dependsOn": [
               "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
               "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
@@ -37,17 +37,17 @@
           "properties": {
               "containers": [
                   {
-                      "name": "[parameters('ContainerName')]",
+                      "name": "[parameters('ContainerGroupsName')]",
                       "properties": {
-                          "image": "jacobalberty/unifi:latest",
+                          "image": "linuxserver/unifi-controller:latest",
                           "ports": [
                               {
                                   "protocol": "UDP",
                                   "port": 3478
                               },
                               {
-                                  "protocol": "TCP",
-                                  "port": 6789
+                                  "protocol": "UDP",
+                                  "port": 10001
                               },
                               {
                                   "protocol": "TCP",
@@ -65,14 +65,14 @@
                           "environmentVariables": [],
                           "resources": {
                               "requests": {
-                                  "memoryInGB": 2,
+                                  "memoryInGB": 1.5,
                                   "cpu": 1
                               }
                           },
                           "volumeMounts": [
                               {
                                   "name": "azurefile",
-                                  "mountPath": "/unifi/"
+                                  "mountPath": "/config/"
                               }
                           ]
                       }
@@ -86,8 +86,8 @@
                           "port": 3478
                       },
                       {
-                          "protocol": "TCP",
-                          "port": 6789
+                          "protocol": "UDP",
+                          "port": 10001
                       },
                       {
                           "protocol": "TCP",
@@ -102,7 +102,8 @@
                           "port": 8880
                       }
                   ],
-                  "type": "Public"
+                  "type": "Public",
+                  "dnsNameLabel": "[parameters('dnsNameLabel')]"
               },
               "osType": "Linux",
               "volumes": [
@@ -119,9 +120,9 @@
       },
       {
           "type": "Microsoft.Storage/storageAccounts",
-          "apiVersion": "2021-08-01",
+          "apiVersion": "2019-06-01",
           "name": "[parameters('StorageAccountName')]",
-          "location": "[parameters('location')]",
+          "location": "[resourceGroup().location]",
           "sku": {
               "name": "Standard_LRS",
               "tier": "Standard"
