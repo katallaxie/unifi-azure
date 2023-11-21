@@ -8,8 +8,8 @@
     "dnsNameLabel": {
       "value": "heyazureguy"
     },
-    "StorageAccountName": {
-      "value": "[uniqueString( utcNow('u') )]"
+    "storageNamePrefix": {
+      "value": "gigantic"
     }
   }
 }
