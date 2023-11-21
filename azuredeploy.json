@@ -5,24 +5,25 @@
       "ContainerGroupsName": {
           "type": "string",
           "metadata": {
-          "description": "Name for the container instance and group."
+            "description": "Name for the container instance and group."
           }
       },
       "dnsNameLabel": {
           "type": "string",
           "metadata": {
-          "description": "DNS name for your container instance eg heyazureguy - will result in dnsnamelabel.location.azurecontainer.io"
+            "description": "DNS name for your container instance eg heyazureguy - will result in dnsnamelabel.location.azurecontainer.io"
           }
       },
-      "StorageAccountName": {
+      "storageNamePrefix": {
           "type": "string",
           "metadata": {
-          "description": "Storage Account Name will be auto generated."
+            "description": "The prefix string to add to a generated string that is unique to the resourceGroup."
           }
       }
   },
   "variables": {
-      "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+      "storageName": "[toLower( concat( parameters('storageNamePrefix'), uniqueString(resourceGroup().id) ) )]",
+      "location": "[resourceGroup().location]"
   },
   "resources": [
       {
@@ -121,8 +122,8 @@
       {
           "type": "Microsoft.Storage/storageAccounts",
           "apiVersion": "2019-06-01",
-          "name": "[parameters('StorageAccountName')]",
-          "location": "[resourceGroup().location]",
+          "name": "[variables('storageName')]",
+          "location": "[variables('location')]",
           "sku": {
               "name": "Standard_LRS",
               "tier": "Standard"
@@ -182,5 +183,11 @@
               "shareQuota": 1
           }
       }
-  ]
+  ],
+  "outputs": {
+    "storageAccountName": {
+      "type": "string",
+      "value": "[variables('storageName')]"
+    }
+  }
 }
