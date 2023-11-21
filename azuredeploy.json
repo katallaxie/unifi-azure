@@ -32,8 +32,8 @@
           "name": "[parameters('ContainerGroupsName')]",
           "location": "[resourceGroup().location]",
           "dependsOn": [
-              "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
-              "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+              "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('storageName'), 'default')]",
+              "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
           ],
           "properties": {
               "containers": [
@@ -112,7 +112,7 @@
                       "name": "azurefile",
                       "azureFile": {
                           "shareName": "unifi",
-                          "storageAccountName": "[parameters('StorageAccountName')]",
+                          "storageAccountName": "[variables('storageName')]",
                           "storageAccountKey": "[listKeys(variables('storageAccountId'), '2019-04-01').keys[0].value]"
                       }
                   }
@@ -157,9 +157,9 @@
       {
           "type": "Microsoft.Storage/storageAccounts/fileServices",
           "apiVersion": "2019-06-01",
-          "name": "[concat(parameters('StorageAccountName'), '/default')]",
+          "name": "[concat(variables('storageName'), '/default')]",
           "dependsOn": [
-              "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+              "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
           ],
           "sku": {
               "name": "Standard_LRS",
@@ -174,10 +174,10 @@
       {
           "type": "Microsoft.Storage/storageAccounts/fileServices/shares",
           "apiVersion": "2019-06-01",
-          "name": "[concat(parameters('StorageAccountName'), '/default/unifi')]",
+          "name": "[concat(variables('storageName'), '/default/unifi')]",
           "dependsOn": [
-              "[resourceId('Microsoft.Storage/storageAccounts/fileServices', parameters('StorageAccountName'), 'default')]",
-              "[resourceId('Microsoft.Storage/storageAccounts', parameters('StorageAccountName'))]"
+              "[resourceId('Microsoft.Storage/storageAccounts/fileServices', variables('storageName'), 'default')]",
+              "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]"
           ],
           "properties": {
               "shareQuota": 1
