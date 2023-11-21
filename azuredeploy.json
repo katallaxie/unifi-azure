@@ -41,7 +41,7 @@
                   {
                       "name": "[parameters('containerGroupsName')]",
                       "properties": {
-                          "image": "linuxserver/unifi-controller:latest",
+                          "image": "lscr.io/linuxserver/unifi-controller:latest",
                           "ports": [
                               {
                                   "protocol": "UDP",
@@ -64,7 +64,20 @@
                                   "port": 8880
                               }
                           ],
-                          "environmentVariables": [],
+                          "environmentVariables": [
+                            {
+                              "name": "PUID",
+                              "value": "1000"
+                            },
+                            {
+                              "name": "PGID",
+                              "value": "1000"
+                            },
+                            {
+                              "name": "TZ",
+                              "value": "Etc/UTC"
+                            }
+                          ],
                           "resources": {
                               "requests": {
                                   "memoryInGB": 1.5,
